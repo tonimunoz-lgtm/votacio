@@ -37,13 +37,9 @@
             margin: 0 auto;
         }
         
-        .admin-panel {
-            display: none;
-        }
+        .admin-panel { display: none; }
         
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .input-group { margin-bottom: 20px; }
         
         label {
             display: block;
@@ -71,9 +67,7 @@
             margin-bottom: 10px;
         }
         
-        button:hover {
-            opacity: 0.9;
-        }
+        button:hover { opacity: 0.9; }
         
         .btn-primary { background: #2196F3; color: white; }
         .btn-danger { background: #f44336; color: white; }
@@ -160,10 +154,22 @@
             margin-top: 10px;
         }
         
-        .fecha-guardado {
-            color: #999;
-            font-size: 0.9rem;
-            margin-top: 5px;
+        .error-msg {
+            color: #f44336;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .debug-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -171,52 +177,53 @@
     <div class="container">
         <h1>⚙️ Panell d'Administració</h1>
         
-        <!-- LOGIN -->
+        <div id="errorMsg" class="error-msg"></div>
+        
         <div id="loginPanel" class="login-panel">
             <div class="input-group">
-                <label>🔐 Contrasenya d'administrador:</label>
-                <input type="password" id="adminPassword" placeholder="Introdueix la contrasenya...">
+                <label>🔐 Contrasenya:</label>
+                <input type="password" id="adminPassword" placeholder="Introdueix la contrasenya..." value="claustre2024">
             </div>
             <button onclick="login()" class="btn-primary">Accedir</button>
             <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                Contrasenya per defecte: <code>claustre2024</code>
+                Contrasenya: <code>claustre2024</code>
             </p>
         </div>
         
-        <!-- PANEL ADMIN -->
         <div id="adminPanel" class="admin-panel">
-            
             <div class="alert alert-warning">
-                <strong>⚠️ Atenció:</strong> Les accions d'aquest panell afecten tots els dispositius en temps real.
+                <strong>⚠️ Atenció:</strong> Les accions afecten tots els dispositius en temps real.
             </div>
+            
+            <div id="debugInfo" class="debug-info" style="display: none;"></div>
             
             <!-- Votación 1 -->
             <div class="votacion-admin">
                 <div class="votacion-header">
                     <div class="votacion-titulo">📋 Votació 1</div>
-                    <span id="estado1" class="fecha-guardado">Carregant...</span>
+                    <span id="estado1" class="total-participantes">...</span>
                 </div>
-                <div id="resultados1" class="resultados-grid">
+                <div class="resultados-grid">
                     <div class="resultado-box resultado-si">
                         <div>SÍ</div>
-                        <div class="resultado-numero" id="v1-si">0</div>
+                        <div class="resultado-numero" id="v1-si">-</div>
                     </div>
                     <div class="resultado-box resultado-no">
                         <div>NO</div>
-                        <div class="resultado-numero" id="v1-no">0</div>
+                        <div class="resultado-numero" id="v1-no">-</div>
                     </div>
                     <div class="resultado-box resultado-blanc">
                         <div>BLANC</div>
-                        <div class="resultado-numero" id="v1-blanc">0</div>
+                        <div class="resultado-numero" id="v1-blanc">-</div>
                     </div>
                 </div>
                 <div class="total-participantes">
-                    Total participants: <strong id="v1-total">0</strong>
+                    Total: <strong id="v1-total">0</strong> participants
                 </div>
                 <div class="acciones">
-                    <button onclick="resetearVotacion('votacion1')" class="btn-danger">🗑️ Resetear Votació</button>
-                    <button onclick="guardarVotacion('votacion1')" class="btn-success">💾 Guardar Resultats</button>
-                    <button onclick="verParticipantes('votacion1')" class="btn-warning">👥 Veure Participants</button>
+                    <button onclick="resetearVotacion('votacion1')" class="btn-danger">🗑️ Resetear</button>
+                    <button onclick="guardarVotacion('votacion1')" class="btn-success">💾 Guardar</button>
+                    <button onclick="verParticipantes('votacion1')" class="btn-warning">👥 Participants</button>
                 </div>
             </div>
             
@@ -224,29 +231,29 @@
             <div class="votacion-admin">
                 <div class="votacion-header">
                     <div class="votacion-titulo">📋 Votació 2</div>
-                    <span id="estado2" class="fecha-guardado">Carregant...</span>
+                    <span id="estado2" class="total-participantes">...</span>
                 </div>
-                <div id="resultados2" class="resultados-grid">
+                <div class="resultados-grid">
                     <div class="resultado-box resultado-si">
                         <div>SÍ</div>
-                        <div class="resultado-numero" id="v2-si">0</div>
+                        <div class="resultado-numero" id="v2-si">-</div>
                     </div>
                     <div class="resultado-box resultado-no">
                         <div>NO</div>
-                        <div class="resultado-numero" id="v2-no">0</div>
+                        <div class="resultado-numero" id="v2-no">-</div>
                     </div>
                     <div class="resultado-box resultado-blanc">
                         <div>BLANC</div>
-                        <div class="resultado-numero" id="v2-blanc">0</div>
+                        <div class="resultado-numero" id="v2-blanc">-</div>
                     </div>
                 </div>
                 <div class="total-participantes">
-                    Total participants: <strong id="v2-total">0</strong>
+                    Total: <strong id="v2-total">0</strong> participants
                 </div>
                 <div class="acciones">
-                    <button onclick="resetearVotacion('votacion2')" class="btn-danger">🗑️ Resetear Votació</button>
-                    <button onclick="guardarVotacion('votacion2')" class="btn-success">💾 Guardar Resultats</button>
-                    <button onclick="verParticipantes('votacion2')" class="btn-warning">👥 Veure Participants</button>
+                    <button onclick="resetearVotacion('votacion2')" class="btn-danger">🗑️ Resetear</button>
+                    <button onclick="guardarVotacion('votacion2')" class="btn-success">💾 Guardar</button>
+                    <button onclick="verParticipantes('votacion2')" class="btn-warning">👥 Participants</button>
                 </div>
             </div>
             
@@ -254,200 +261,236 @@
             <div class="votacion-admin">
                 <div class="votacion-header">
                     <div class="votacion-titulo">📋 Votació 3</div>
-                    <span id="estado3" class="fecha-guardado">Carregant...</span>
+                    <span id="estado3" class="total-participantes">...</span>
                 </div>
-                <div id="resultados3" class="resultados-grid">
+                <div class="resultados-grid">
                     <div class="resultado-box resultado-si">
                         <div>SÍ</div>
-                        <div class="resultado-numero" id="v3-si">0</div>
+                        <div class="resultado-numero" id="v3-si">-</div>
                     </div>
                     <div class="resultado-box resultado-no">
                         <div>NO</div>
-                        <div class="resultado-numero" id="v3-no">0</div>
+                        <div class="resultado-numero" id="v3-no">-</div>
                     </div>
                     <div class="resultado-box resultado-blanc">
                         <div>BLANC</div>
-                        <div class="resultado-numero" id="v3-blanc">0</div>
+                        <div class="resultado-numero" id="v3-blanc">-</div>
                     </div>
                 </div>
                 <div class="total-participantes">
-                    Total participants: <strong id="v3-total">0</strong>
+                    Total: <strong id="v3-total">0</strong> participants
                 </div>
                 <div class="acciones">
-                    <button onclick="resetearVotacion('votacion3')" class="btn-danger">🗑️ Resetear Votació</button>
-                    <button onclick="guardarVotacion('votacion3')" class="btn-success">💾 Guardar Resultats</button>
-                    <button onclick="verParticipantes('votacion3')" class="btn-warning">👥 Veure Participants</button>
+                    <button onclick="resetearVotacion('votacion3')" class="btn-danger">🗑️ Resetear</button>
+                    <button onclick="guardarVotacion('votacion3')" class="btn-success">💾 Guardar</button>
+                    <button onclick="verParticipantes('votacion3')" class="btn-warning">👥 Participants</button>
                 </div>
             </div>
             
-            <!-- Acciones globales -->
             <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 20px;">
-                <h3 style="margin-bottom: 15px;">🌍 Accions Globals</h3>
-                <button onclick="resetearTodo()" class="btn-danger">🗑️🗑️🗑️ RESET TOT (Totes les votacions)</button>
-                <button onclick="exportarTodo()" class="btn-primary">📥 Exportar Totes les Dades</button>
-                <button onclick="logout()" class="btn-warning" style="float: right;">🚪 Tancar Sessió</button>
+                <h3 style="margin-bottom: 15px;">🌍 Globals</h3>
+                <button onclick="resetearTodo()" class="btn-danger">🗑️🗑️🗑️ RESET TOTAL</button>
+                <button onclick="exportarTodo()" class="btn-primary">📥 Exportar JSON</button>
+                <button onclick="testConexion()" class="btn-warning">🔄 Test Connexió</button>
+                <button onclick="logout()" class="btn-primary" style="float: right;">🚪 Sortir</button>
             </div>
             
-            <!-- Exportación -->
             <div id="exportPanel" style="display: none; margin-top: 20px;">
                 <div class="alert alert-success">
-                    <strong>📋 Dades exportades:</strong>
+                    <strong>Dades:</strong>
                     <div id="exportData" class="export-data"></div>
-                    <button onclick="copiarExport()" class="btn-primary" style="margin-top: 10px;">📋 Copiar al Portapapers</button>
+                    <button onclick="copiarExport()" class="btn-primary" style="margin-top: 10px;">📋 Copiar</button>
                 </div>
             </div>
             
-            <!-- Panel de participantes -->
             <div id="participantesPanel" style="display: none; margin-top: 20px;">
                 <div class="alert alert-warning">
-                    <strong>👥 Participants:</strong>
+                    <strong>Participants:</strong>
                     <div id="participantesData" class="export-data"></div>
                 </div>
             </div>
-            
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE - MISMOS DATOS QUE INDEX.HTML
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
-            projectId: "TU_PROYECTO",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            apiKey: "AIzaSyBF7P-Soao-ZSams3JceNVRYpr5tNs_RIs",
+            authDomain: "campeonato-82be4.firebaseapp.com",
+            databaseURL: "https://campeonato-82be4-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "campeonato-82be4",
+            storageBucket: "campeonato-82be4.firebasestorage.app",
+            messagingSenderId: "185901856877",
+            appId: "1:185901856877:web:f1336e539b7a92aeb36764"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log('Firebase inicializado correctamente');
+        } catch (e) {
+            console.error('Error inicializando Firebase:', e);
+        }
         
-        // CONTRASEÑA ADMIN (cámbiala después)
+        const database = firebase.database();
         const ADMIN_PASSWORD = 'claustre2024';
         
-        // Escuchar cambios en tiempo real
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+        
+        function actualizarUI(votacion, datos, num) {
+            const si = datos?.si || 0;
+            const no = datos?.no || 0;
+            const blanc = datos?.blanc || 0;
+            const total = datos?.totalVotantes || 0;
+            
+            document.getElementById(`v${num}-si`).textContent = si;
+            document.getElementById(`v${num}-no`).textContent = no;
+            document.getElementById(`v${num}-blanc`).textContent = blanc;
+            document.getElementById(`v${num}-total`).textContent = total;
+            document.getElementById(`estado${num}`).textContent = 
+                total > 0 ? `✅ ${total} vots` : '⚪ Sense vots';
+        }
+        
         function iniciarEscucha() {
+            console.log('Iniciando escucha de Firebase...');
+            
             ['votacion1', 'votacion2', 'votacion3'].forEach((vot, idx) => {
                 database.ref('votaciones/' + vot).on('value', snapshot => {
-                    const datos = snapshot.val() || { si: 0, no: 0, blanc: 0, totalVotantes: 0 };
-                    actualizarUI(vot, datos, idx + 1);
+                    console.log('Datos recibidos para', vot, ':', snapshot.val());
+                    actualizarUI(vot, snapshot.val(), idx + 1);
+                }, error => {
+                    console.error('Error en listener:', error);
+                    showError('Error carregant ' + vot + ': ' + error.message);
                 });
             });
         }
         
-        function actualizarUI(votacion, datos, num) {
-            document.getElementById(`v${num}-si`).textContent = datos.si || 0;
-            document.getElementById(`v${num}-no`).textContent = datos.no || 0;
-            document.getElementById(`v${num}-blanc`).textContent = datos.blanc || 0;
-            document.getElementById(`v${num}-total`).textContent = datos.totalVotantes || 0;
+        function testConexion() {
+            const debug = document.getElementById('debugInfo');
+            debug.style.display = 'block';
+            
+            database.ref('.info/connected').on('value', snap => {
+                const conectado = snap.val() ? '✅' : '❌';
+                debug.textContent = 'Estat connexió: ' + conectado + ' | ' + new Date().toLocaleTimeString();
+            });
+            
+            // Test lectura votaciones
+            database.ref('votaciones').once('value').then(snap => {
+                console.log('Test lectura OK:', snap.val());
+                debug.textContent += ' | Dades llegides correctament';
+            }).catch(err => {
+                console.error('Test error:', err);
+                showError('Error de connexió: ' + err.message);
+            });
         }
         
-        // Login
         function login() {
             const pass = document.getElementById('adminPassword').value;
             if (pass === ADMIN_PASSWORD) {
                 document.getElementById('loginPanel').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
                 iniciarEscucha();
+                testConexion(); // Ver conexión inmediatamente
             } else {
-                alert('Contrasenya incorrecta!');
+                showError('Contrasenya incorrecta!');
             }
         }
         
-        // Logout
         function logout() {
             document.getElementById('loginPanel').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('adminPassword').value = '';
         }
         
-        // Resetear una votación
-        function resetearVotacion(votacion) {
-            if (!confirm(`⚠️ Segur que vols BORRAR tots els vots de ${votacion}?`)) return;
+        async function resetearVotacion(votacion) {
+            if (!confirm(`⚠️ Segur que vols borrar ${votacion}?`)) return;
             
-            database.ref('votaciones/' + votacion).set({
-                si: 0,
-                no: 0,
-                blanc: 0,
-                totalVotantes: 0,
-                reseteadoEn: new Date().toISOString()
-            });
-            
-            alert(`✅ ${votacion} resetejada correctament`);
-        }
-        
-        // Resetear todo
-        function resetearTodo() {
-            if (!confirm('⚠️⚠️⚠️ SEGUR que vols borrar TOTES les votacions? Aquesta acció no es pot desfer!')) return;
-            
-            ['votacion1', 'votacion2', 'votacion3'].forEach(vot => {
-                database.ref('votaciones/' + vot).set({
+            try {
+                await database.ref('votaciones/' + votacion).set({
                     si: 0,
                     no: 0,
                     blanc: 0,
                     totalVotantes: 0,
                     reseteadoEn: new Date().toISOString()
                 });
-            });
-            
-            alert('✅ Totes les votacions han sigut resetejades');
+                alert(`✅ ${votacion} resetejada`);
+            } catch (e) {
+                showError('Error: ' + e.message);
+            }
         }
         
-        // Guardar resultados (archivar)
-        function guardarVotacion(votacion) {
-            database.ref('votaciones/' + votacion).once('value').then(snapshot => {
-                const datos = snapshot.val();
-                const guardado = {
+        async function resetearTodo() {
+            if (!confirm('⚠️⚠️⚠️ SEGUR? Això no es pot desfer!')) return;
+            
+            try {
+                for (let vot of ['votacion1', 'votacion2', 'votacion3']) {
+                    await database.ref('votaciones/' + vot).set({
+                        si: 0, no: 0, blanc: 0, totalVotantes: 0,
+                        reseteadoEn: new Date().toISOString()
+                    });
+                }
+                alert('✅ Tot resetejat');
+            } catch (e) {
+                showError('Error: ' + e.message);
+            }
+        }
+        
+        async function guardarVotacion(votacion) {
+            try {
+                const snap = await database.ref('votaciones/' + votacion).once('value');
+                const datos = snap.val();
+                
+                await database.ref('historial/' + votacion + '_' + Date.now()).set({
                     ...datos,
                     guardadoEn: new Date().toISOString(),
                     votacion: votacion
-                };
+                });
                 
-                database.ref('historial/' + votacion + '_' + Date.now()).set(guardado);
-                
-                document.getElementById('estado' + votacion.replace('votacion', '')).textContent = 
-                    'Guardat: ' + new Date().toLocaleString('ca-ES');
-                
-                alert('✅ Resultats guardats a l\'historial');
-            });
+                alert('✅ Guardat a historial');
+            } catch (e) {
+                showError('Error: ' + e.message);
+            }
         }
         
-        // Ver participantes
-        function verParticipantes(votacion) {
-            database.ref('votaciones/' + votacion + '/participantes').once('value').then(snapshot => {
-                const participantes = snapshot.val() || {};
-                const lista = Object.entries(participantes).map(([id, datos]) => {
-                    const fecha = new Date(datos.timestamp).toLocaleString('ca-ES');
-                    return `- ${datos.voto.toUpperCase()} (${fecha})`;
+        async function verParticipantes(votacion) {
+            try {
+                const snap = await database.ref('votaciones/' + votacion + '/participantes').once('value');
+                const part = snap.val() || {};
+                const lista = Object.entries(part).map(([id, d]) => {
+                    return `- ${d.voto?.toUpperCase()} (${new Date(d.timestamp).toLocaleString('ca-ES')})`;
                 });
                 
                 document.getElementById('participantesData').textContent = 
-                    lista.length ? lista.join('\n') : 'Cap participant encara';
+                    lista.length ? lista.join('\n') : 'Cap participant';
                 document.getElementById('participantesPanel').style.display = 'block';
-            });
+            } catch (e) {
+                showError('Error: ' + e.message);
+            }
         }
         
-        // Exportar todo
-        function exportarTodo() {
-            database.ref('votaciones').once('value').then(snapshot => {
-                const datos = snapshot.val();
+        async function exportarTodo() {
+            try {
+                const snap = await database.ref('votaciones').once('value');
+                const datos = snap.val();
                 const texto = JSON.stringify(datos, null, 2);
                 
                 document.getElementById('exportData').textContent = texto;
                 document.getElementById('exportPanel').style.display = 'block';
-            });
+            } catch (e) {
+                showError('Error: ' + e.message);
+            }
         }
         
-        // Copiar al portapapeles
         function copiarExport() {
             const texto = document.getElementById('exportData').textContent;
-            navigator.clipboard.writeText(texto).then(() => {
-                alert('✅ Dades copiades al portapapers!');
-            });
+            navigator.clipboard.writeText(texto).then(() => alert('✅ Copiat!'));
         }
         
-        // Enter en password
+        // Login con Enter
         document.getElementById('adminPassword')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
