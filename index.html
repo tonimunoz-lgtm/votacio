@@ -652,7 +652,7 @@
             });
         }
 
-        // Actualizar gráfico
+       // Actualizar gráfico - BARRAS PROPORCIONALES A VOTOS
         function actualizarGrafico(datos) {
             const si = datos.si || 0;
             const no = datos.no || 0;
@@ -666,15 +666,25 @@
             document.getElementById('valorBlanc').textContent = blanc;
             
             const totalVotos = si + no + blanc;
-            const maxValor = Math.max(si, no, blanc, 1);
             
-            document.getElementById('barraSi').style.height = Math.max(5, (si / maxValor) * 100) + '%';
-            document.getElementById('barraNo').style.height = Math.max(5, (no / maxValor) * 100) + '%';
-            document.getElementById('barraBlanc').style.height = Math.max(5, (blanc / maxValor) * 100) + '%';
+            // Calcular porcentajes reales sobre el total de votos
+            const pctSi = totalVotos > 0 ? (si / totalVotos) * 100 : 0;
+            const pctNo = totalVotos > 0 ? (no / totalVotos) * 100 : 0;
+            const pctBlanc = totalVotos > 0 ? (blanc / totalVotos) * 100 : 0;
             
-            document.getElementById('pctSi').textContent = totalVotos > 0 ? ((si / totalVotos) * 100).toFixed(1) + '%' : '0%';
-            document.getElementById('pctNo').textContent = totalVotos > 0 ? ((no / totalVotos) * 100).toFixed(1) + '%' : '0%';
-            document.getElementById('pctBlanc').textContent = totalVotos > 0 ? ((blanc / totalVotos) * 100).toFixed(1) + '%' : '0%';
+            // Aplicar altura proporcional al porcentaje (mínimo 3% para que se vea si hay pocos votos)
+            const alturaSi = Math.max(3, pctSi);
+            const alturaNo = Math.max(3, pctNo);
+            const alturaBlanc = Math.max(3, pctBlanc);
+            
+            document.getElementById('barraSi').style.height = alturaSi + '%';
+            document.getElementById('barraNo').style.height = alturaNo + '%';
+            document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
+            
+            // Mostrar porcentajes debajo
+            document.getElementById('pctSi').textContent = pctSi.toFixed(1) + '%';
+            document.getElementById('pctNo').textContent = pctNo.toFixed(1) + '%';
+            document.getElementById('pctBlanc').textContent = pctBlanc.toFixed(1) + '%';
         }
 
         // Volver a inicio
