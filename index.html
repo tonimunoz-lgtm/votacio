@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema de Votació - Claustre</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            flex: 1;
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+        
+        /* PANTALLA 1: SELECCIÓN */
+        .pantalla-seleccion {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .votacion-select {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2rem;
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .btn-entrar {
+            padding: 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-entrar:active {
+            transform: scale(0.98);
+            background: #45a049;
+        }
+        
+        /* PANTALLA 2: VOTACIÓN */
+        .pantalla-votacion {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .pregunta-titulo {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .botones-voto {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .btn-voto {
+            padding: 40px 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-voto:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-si {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-no {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+        
+        .btn-blanc {
+            background: linear-gradient(135deg, #9e9e9e, #757575);
+            color: white;
+        }
+        
+        .btn-ver-resultados {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* PANTALLA 3: RESULTADOS */
+        .pantalla-resultados {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .header-resultados {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .titulo-votacion {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .contador-votantes {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .grafico-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .barras-vertical {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 300px;
+            gap: 20px;
+        }
+        
+        .barra-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .barra {
+            width: 100%;
+            max-width: 80px;
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+            min-height: 10px;
+        }
+        
+        .barra-si {
+            background: #4CAF50;
+        }
+        
+        .barra-no {
+            background: #f44336;
+        }
+        
+        .barra-blanc {
+            background: #9e9e9e;
+        }
+        
+        .barra-valor {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .barra-label {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .barra-porcentaje {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .btn-volver {
+            margin-top: 20px;
+            padding: 20px;
+            background: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* UTILIDADES */
+        .oculto {
+            display: none !important;
+        }
+        
+        .votado-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PANTALLA 1: SELECCIONAR VOTACIÓN -->
+        <div id="pantallaSeleccion" class="pantalla-seleccion">
+            <h1>🗳️ Sistema de Votació</h1>
+            
+            <select id="selectVotacion" class="votacion-select">
+                <option value="">-- Selecciona una votació --</option>
+                <option value="votacion1">📋 Votació 1</option>
+                <option value="votacion2">📋 Votació 2</option>
+                <option value="votacion3">📋 Votació 3</option>
+            </select>
+            
+            <button onclick="entrarAVotar()" class="btn-entrar">
+                🚀 Entrar a Votar
+            </button>
+        </div>
+
+        <!-- PANTALLA 2: BOTONES DE VOTO -->
+        <div id="pantallaVotacion" class="pantalla-votacion">
+            <div id="preguntaVotacion" class="pregunta-titulo"></div>
+            
+            <div class="botones-voto">
+                <button onclick="votar('si')" class="btn-voto btn-si">
+                    ✅ SÍ
+                </button>
+                <button onclick="votar('no')" class="btn-voto btn-no">
+                    ❌ NO
+                </button>
+                <button onclick="votar('blanc')" class="btn-voto btn-blanc">
+                    ⚪ BLANC
+                </button>
+            </div>
+            
+            <button onclick="irAResultados()" class="btn-ver-resultados">
+                📊 Veure Resultats
+            </button>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS EN TIEMPO REAL -->
+        <div id="pantallaResultados" class="pantalla-resultados">
+            <div class="header-resultados">
+                <div id="tituloResultado" class="titulo-votacion"></div>
+                <div id="contadorResultado" class="contador-votantes">
+                    👥 Persones que han votat: <span id="totalVotantes">0</span>
+                </div>
+            </div>
+            
+            <div class="grafico-container">
+                <div class="barras-vertical">
+                    <div class="barra-item">
+                        <div class="barra barra-si" id="barraSi" style="height: 0%">
+                            <span class="barra-valor" id="valorSi">0</span>
+                        </div>
+                        <div class="barra-label">SÍ</div>
+                        <div class="barra-porcentaje" id="pctSi">0%</div>
+                    </div>
+                    
+                    <div class="barra-item">
+                        <div class="barra barra-no" id="barraNo" style="height: 0%">
+                            <span class="barra-valor" id="valorNo">0</span>
+                        </div>
+                        <div class="barra-label">NO</div>
+                        <div class="barra-porcentaje" id="pctNo">0%</div>
+                    </div>
+                    
+                    <div class="barra-item">
+                        <div class="barra barra-blanc" id="barraBlanc" style="height: 0%">
+                            <span class="barra-valor" id="valorBlanc">0</span>
+                        </div>
+                        <div class="barra-label">BLANC</div>
+                        <div class="barra-porcentaje" id="pctBlanc">0%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="volverAInicio()" class="btn-volver">
+                🔄 Tornar a l'inici
+            </button>
+        </div>
+
+        <!-- Badge cuando ya ha votado -->
+        <div id="votadoBadge" class="votado-badge oculto">
+            ✅ Ja has votat
+        </div>
+    </div>
+
+    <script>
+        // 🔥 CONFIGURACIÓN FIREBASE (Reemplaza con tus datos)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Variables globales
+        let votacionActual = null;
+        let yaVotado = false;
+        let votacionRef = null;
+
+        // Nombres de las votaciones
+        const nombresVotaciones = {
+            'votacion1': '📋 Votació 1: Aprovació del pressupost',
+            'votacion2': '📋 Votació 2: Modificació normativa',
+            'votacion3': '📋 Votació 3: Nou calendari escolar'
+        };
+
+        // Entrar a votar
+        function entrarAVotar() {
+            const select = document.getElementById('selectVotacion');
+            votacionActual = select.value;
+            
+            if (!votacionActual) {
+                alert('Si us plau, selecciona una votació');
+                return;
+            }
+            
+            document.getElementById('pantallaSeleccion').style.display = 'none';
+            document.getElementById('pantallaVotacion').style.display = 'flex';
+            document.getElementById('preguntaVotacion').textContent = nombresVotaciones[votacionActual];
+            
+            yaVotado = false;
+            document.getElementById('votadoBadge').classList.add('oculto');
+        }
+
+        // Emitir voto
+        function votar(tipo) {
+            if (yaVotado) {
+                alert('Ja has votat en aquesta votació!');
+                return;
+            }
+            
+            const ref = database.ref('votaciones/' + votacionActual + '/' + tipo);
+            ref.transaction(function(currentValue) {
+                return (currentValue || 0) + 1;
+            });
+            
+            const refTotal = database.ref('votaciones/' + votacionActual + '/totalVotantes');
+            refTotal.transaction(function(currentValue) {
+                return (currentValue || 0) + 1;
+            });
+            
+            yaVotado = true;
+            document.getElementById('votadoBadge').classList.remove('oculto');
+            
+            // Opcional: Ir automáticamente a resultados
+            setTimeout(irAResultados, 1000);
+        }
+
+        // Ir a resultados
+        function irAResultados() {
+            if (!votacionActual) {
+                alert('Primer has de seleccionar una votació');
+                return;
+            }
+            
+            document.getElementById('pantallaVotacion').style.display = 'none';
+            document.getElementById('pantallaResultados').style.display = 'flex';
+            document.getElementById('tituloResultado').textContent = nombresVotaciones[votacionActual];
+            
+            // Escuchar cambios en tiempo real
+            if (votacionRef) votacionRef.off();
+            
+            votacionRef = database.ref('votaciones/' + votacionActual);
+            votacionRef.on('value', function(snapshot) {
+                const datos = snapshot.val() || { si: 0, no: 0, blanc: 0, totalVotantes: 0 };
+                actualizarGrafico(datos);
+            });
+        }
+
+        // Actualizar gráfico
+        function actualizarGrafico(datos) {
+            const si = datos.si || 0;
+            const no = datos.no || 0;
+            const blanc = datos.blanc || 0;
+            const total = datos.totalVotantes || 0;
+            
+            const totalVotos = si + no + blanc;
+            
+            // Actualizar contador
+            document.getElementById('totalVotantes').textContent = total;
+            
+            // Actualizar valores
+            document.getElementById('valorSi').textContent = si;
+            document.getElementById('valorNo').textContent = no;
+            document.getElementById('valorBlanc').textContent = blanc;
+            
+            // Calcular porcentajes para las barras (mínimo 5% para visibilidad)
+            const maxValor = Math.max(si, no, blanc, 1);
+            const alturaMax = 100;
+            
+            const alturaSi = totalVotos > 0 ? Math.max(5, (si / maxValor) * 100) : 5;
+            const alturaNo = totalVotos > 0 ? Math.max(5, (no / maxValor) * 100) : 5;
+            const alturaBlanc = totalVotos > 0 ? Math.max(5, (blanc / maxValor) * 100) : 5;
+            
+            document.getElementById('barraSi').style.height = alturaSi + '%';
+            document.getElementById('barraNo').style.height = alturaNo + '%';
+            document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
+            
+            // Porcentajes reales
+            const pctSi = totalVotos > 0 ? ((si / totalVotos) * 100).toFixed(1) : 0;
+            const pctNo = totalVotos > 0 ? ((no / totalVotos) * 100).toFixed(1) : 0;
+            const pctBlanc = totalVotos > 0 ? ((blanc / totalVotos) * 100).toFixed(1) : 0;
+            
+            document.getElementById('pctSi').textContent = pctSi + '%';
+            document.getElementById('pctNo').textContent = pctNo + '%';
+            document.getElementById('pctBlanc').textContent = pctBlanc + '%';
+        }
+
+        // Volver a inicio
+        function volverAInicio() {
+            if (votacionRef) votacionRef.off();
+            votacionActual = null;
+            yaVotado = false;
+            
+            document.getElementById('pantallaResultados').style.display = 'none';
+            document.getElementById('pantallaSeleccion').style.display = 'flex';
+            document.getElementById('selectVotacion').value = '';
+            document.getElementById('votadoBadge').classList.add('oculto');
+        }
+
+        // Manejar cambio de orientación en móvil
+        window.addEventListener('orientationchange', function() {
+            if (votacionActual && document.getElementById('pantallaResultados').style.display === 'flex') {
+                setTimeout(function() {
+                    // Re-renderizar gráfico si es necesario
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
