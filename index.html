@@ -258,19 +258,23 @@
         }
         
         .barras-vertical {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            height: 300px;
-            gap: 20px;
-        }
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 300px;
+    gap: 20px;
+    /* Assegurar-nos que no hi ha align-items: stretch per defecte que interfereixi */
+    align-items: flex-end; /* Mantenir això */
+}
         
         .barra-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;          /* ← AFEGIR AIXÒ */
+    justify-content: flex-end; /* ← AFEGIR AIXÒ (perquè la barra creixi des de baix) */
+}
         
         .barra {
             width: 100%;
@@ -653,39 +657,41 @@
         }
 
        // Actualizar gráfico - BARRAS PROPORCIONALES A VOTOS
-        function actualizarGrafico(datos) {
-            const si = datos.si || 0;
-            const no = datos.no || 0;
-            const blanc = datos.blanc || 0;
-            const total = datos.totalVotantes || 0;
-            
-            document.getElementById('totalVotantes').textContent = total;
-            
-            document.getElementById('valorSi').textContent = si;
-            document.getElementById('valorNo').textContent = no;
-            document.getElementById('valorBlanc').textContent = blanc;
-            
-            const totalVotos = si + no + blanc;
-            
-            // Calcular porcentajes reales sobre el total de votos
-            const pctSi = totalVotos > 0 ? (si / totalVotos) * 100 : 0;
-            const pctNo = totalVotos > 0 ? (no / totalVotos) * 100 : 0;
-            const pctBlanc = totalVotos > 0 ? (blanc / totalVotos) * 100 : 0;
-            
-            // Aplicar altura proporcional al porcentaje (mínimo 3% para que se vea si hay pocos votos)
-            const alturaSi = Math.max(3, pctSi);
-            const alturaNo = Math.max(3, pctNo);
-            const alturaBlanc = Math.max(3, pctBlanc);
-            
-            document.getElementById('barraSi').style.height = alturaSi + '%';
-            document.getElementById('barraNo').style.height = alturaNo + '%';
-            document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
-            
-            // Mostrar porcentajes debajo
-            document.getElementById('pctSi').textContent = pctSi.toFixed(1) + '%';
-            document.getElementById('pctNo').textContent = pctNo.toFixed(1) + '%';
-            document.getElementById('pctBlanc').textContent = pctBlanc.toFixed(1) + '%';
-        }
+function actualizarGrafico(datos) {
+    const si = datos.si || 0;
+    const no = datos.no || 0;
+    const blanc = datos.blanc || 0;
+    const total = datos.totalVotantes || 0;
+    
+    document.getElementById('totalVotantes').textContent = total;
+    
+    document.getElementById('valorSi').textContent = si;
+    document.getElementById('valorNo').textContent = no;
+    document.getElementById('valorBlanc').textContent = blanc;
+    
+    const totalVotos = si + no + blanc;
+    
+    // Calcular porcentajes reales sobre el total de votos
+    const pctSi = totalVotos > 0 ? (si / totalVotos) * 100 : 0;
+    const pctNo = totalVotos > 0 ? (no / totalVotos) * 100 : 0;
+    const pctBlanc = totalVotos > 0 ? (blanc / totalVotos) * 100 : 0;
+    
+    // Aplicar altura proporcional al porcentaje (mínim 2% perquè es vegi)
+    const alturaSi = Math.max(2, pctSi);
+    const alturaNo = Math.max(2, pctNo);
+    const alturaBlanc = Math.max(2, pctBlanc);
+    
+    console.log('Percentages:', {si: pctSi, no: pctNo, blanc: pctBlanc}); // Per debug
+    
+    document.getElementById('barraSi').style.height = alturaSi + '%';
+    document.getElementById('barraNo').style.height = alturaNo + '%';
+    document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
+    
+    // Mostrar porcentajes debajo
+    document.getElementById('pctSi').textContent = pctSi.toFixed(1) + '%';
+    document.getElementById('pctNo').textContent = pctNo.toFixed(1) + '%';
+    document.getElementById('pctBlanc').textContent = pctBlanc.toFixed(1) + '%';
+}
 
         // Volver a inicio
         function volverAInicio() {
