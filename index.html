@@ -34,7 +34,6 @@
             font-size: 1.5rem;
         }
         
-        /* MODAL LOGIN SALA */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -99,9 +98,7 @@
             cursor: pointer;
         }
         
-        .btn-accedir:active {
-            transform: scale(0.98);
-        }
+        .btn-accedir:active { transform: scale(0.98); }
         
         .error-msg {
             color: #f44336;
@@ -120,7 +117,20 @@
             color: #1976D2;
         }
         
-        /* PANTALLAS VOTACIÓN */
+        .btn-cambiar-sala {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #666;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
         .pantalla-seleccion {
             display: none;
             flex-direction: column;
@@ -258,23 +268,21 @@
         }
         
         .barras-vertical {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    height: 300px;
-    gap: 20px;
-    /* Assegurar-nos que no hi ha align-items: stretch per defecte que interfereixi */
-    align-items: flex-end; /* Mantenir això */
-}
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 300px;
+            gap: 20px;
+        }
         
         .barra-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    height: 100%;          /* ← AFEGIR AIXÒ */
-    justify-content: flex-end; /* ← AFEGIR AIXÒ (perquè la barra creixi des de baix) */
-}
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            height: 100%;
+            justify-content: flex-end;
+        }
         
         .barra {
             width: 100%;
@@ -282,7 +290,7 @@
             border-radius: 8px 8px 0 0;
             transition: height 0.5s ease;
             position: relative;
-            min-height: 10px;
+            min-height: 2px;
         }
         
         .barra-si { background: #4CAF50; }
@@ -345,24 +353,9 @@
             text-align: center;
             color: #856404;
         }
-        
-        .btn-cambiar-sala {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #666;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            z-index: 100;
-        }
     </style>
 </head>
 <body>
-    <!-- MODAL DE LOGIN SALA -->
     <div id="modalSala" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-title">🗳️ Benvingut al Sistema de Votació</div>
@@ -378,13 +371,11 @@
         
         <div id="salaInfo" class="sala-info"></div>
         
-        <!-- PANTALLA 1: SELECCIONAR VOTACIÓN -->
         <div id="pantallaSeleccion" class="pantalla-seleccion">
             <h1>Tria la votació</h1>
             <div id="listaVotaciones"></div>
         </div>
 
-        <!-- PANTALLA 2: BOTONES DE VOTO -->
         <div id="pantallaVotacion" class="pantalla-votacion">
             <div id="preguntaVotacion" class="pregunta-titulo"></div>
             
@@ -403,7 +394,6 @@
             </button>
         </div>
 
-        <!-- PANTALLA 3: RESULTADOS -->
         <div id="pantallaResultados" class="pantalla-resultados">
             <div class="header-resultados">
                 <div id="tituloResultado" class="titulo-votacion"></div>
@@ -415,21 +405,21 @@
             <div class="grafico-container">
                 <div class="barras-vertical">
                     <div class="barra-item">
-                        <div class="barra barra-si" id="barraSi" style="height: 5%">
+                        <div class="barra barra-si" id="barraSi" style="height: 0%">
                             <span class="barra-valor" id="valorSi">0</span>
                         </div>
                         <div class="barra-label">SÍ</div>
                         <div class="barra-porcentaje" id="pctSi">0%</div>
                     </div>
                     <div class="barra-item">
-                        <div class="barra barra-no" id="barraNo" style="height: 5%">
+                        <div class="barra barra-no" id="barraNo" style="height: 0%">
                             <span class="barra-valor" id="valorNo">0</span>
                         </div>
                         <div class="barra-label">NO</div>
                         <div class="barra-porcentaje" id="pctNo">0%</div>
                     </div>
                     <div class="barra-item">
-                        <div class="barra barra-blanc" id="barraBlanc" style="height: 5%">
+                        <div class="barra barra-blanc" id="barraBlanc" style="height: 0%">
                             <span class="barra-valor" id="valorBlanc">0</span>
                         </div>
                         <div class="barra-label">BLANC</div>
@@ -449,7 +439,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBF7P-Soao-ZSams3JceNVRYpr5tNs_RIs",
             authDomain: "campeonato-82be4.firebaseapp.com",
@@ -463,27 +452,19 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Variables globales
         let salaActual = localStorage.getItem('sala_votacion') || '';
         let votacionActual = null;
         let votacionRef = null;
         let miDeviceId = null;
         let votacionesQueYaHice = new Set();
+        let votacionesConfig = {};
 
-        const votacionesData = {
-            'votacion1': { titulo: '📋 Votació 1: Pressupost anual' },
-            'votacion2': { titulo: '📋 Votació 2: Calendari escolar' },
-            'votacion3': { titulo: '📋 Votació 3: Normativa interna' }
-        };
-
-        // Inicializar
         window.onload = function() {
             if (salaActual) {
                 verificarSala(salaActual);
             }
         };
 
-        // Generar ID único del dispositivo
         function getDeviceId() {
             if (!miDeviceId) {
                 miDeviceId = localStorage.getItem('device_voter_id');
@@ -495,12 +476,10 @@
             return miDeviceId;
         }
 
-        // Acceder a sala
         async function accederSala() {
             const codigo = document.getElementById('inputSala').value.toUpperCase().trim();
             if (!codigo) return;
             
-            // Verificar si existe la sala
             const snapshot = await database.ref('salas/' + codigo).once('value');
             if (!snapshot.exists()) {
                 document.getElementById('errorSala').style.display = 'block';
@@ -513,10 +492,10 @@
             document.getElementById('appContainer').style.display = 'block';
             document.getElementById('salaInfo').textContent = '🏛️ Sala: ' + salaActual;
             
+            await cargarConfigVotaciones();
             inicializarVotaciones();
         }
 
-        // Verificar sala guardada
         async function verificarSala(codigo) {
             const snapshot = await database.ref('salas/' + codigo).once('value');
             if (snapshot.exists()) {
@@ -525,22 +504,39 @@
                 document.getElementById('appContainer').style.display = 'block';
                 document.getElementById('salaInfo').textContent = '🏛️ Sala: ' + salaActual;
                 document.getElementById('inputSala').value = salaActual;
+                
+                await cargarConfigVotaciones();
                 inicializarVotaciones();
             }
         }
 
-        // Cambiar de sala
         function cambiarSala() {
             localStorage.removeItem('sala_votacion');
             location.reload();
         }
 
-        // Verificar votaciones realizadas en esta sala
+        async function cargarConfigVotaciones() {
+            if (!salaActual) return;
+            
+            const snapshot = await database.ref(`salas/${salaActual}/configVotaciones`).once('value');
+            const config = snapshot.val();
+            
+            if (config) {
+                votacionesConfig = config;
+            } else {
+                votacionesConfig = {
+                    'votacion1': { titulo: 'Pressupost anual', orden: 1 },
+                    'votacion2': { titulo: 'Calendari escolar', orden: 2 },
+                    'votacion3': { titulo: 'Normativa interna', orden: 3 }
+                };
+            }
+        }
+
         async function verificarVotacionesRealizadas() {
             const deviceId = getDeviceId();
             votacionesQueYaHice.clear();
             
-            for (let votacion of Object.keys(votacionesData)) {
+            for (let votacion of Object.keys(votacionesConfig)) {
                 try {
                     const snapshot = await database.ref(`salas/${salaActual}/votaciones/${votacion}/participantes/${deviceId}`).once('value');
                     if (snapshot.exists()) {
@@ -552,25 +548,25 @@
             }
         }
 
-        // Inicializar pantalla de votaciones
         async function inicializarVotaciones() {
             await verificarVotacionesRealizadas();
             renderizarVotaciones();
         }
 
-        // Renderizar lista de votaciones
         function renderizarVotaciones() {
             const container = document.getElementById('listaVotaciones');
             container.innerHTML = '';
             
-            Object.keys(votacionesData).forEach(key => {
-                const voto = votacionesData[key];
+            const votacionesOrdenadas = Object.entries(votacionesConfig)
+                .sort((a, b) => a[1].orden - b[1].orden);
+            
+            votacionesOrdenadas.forEach(([key, data]) => {
                 const yaVoto = votacionesQueYaHice.has(key);
                 
                 const card = document.createElement('div');
                 card.className = 'votacion-card' + (yaVoto ? ' votado' : '');
                 card.innerHTML = `
-                    <div class="votacion-titulo">${voto.titulo}</div>
+                    <div class="votacion-titulo">📋 ${data.titulo}</div>
                     <div class="votacion-estado">
                         ${yaVoto ? '✅ Has participat (clica per veure resultats)' : '👆 Toca per votar'}
                     </div>
@@ -584,14 +580,14 @@
             document.getElementById('pantallaSeleccion').style.flexDirection = 'column';
         }
 
-        // Entrar a votar
         function entrarAVotar(votacionId) {
             votacionActual = votacionId;
             const yaVoto = votacionesQueYaHice.has(votacionId);
+            const titulo = votacionesConfig[votacionId]?.titulo || `Votació ${votacionId}`;
             
             document.getElementById('pantallaSeleccion').style.display = 'none';
             document.getElementById('pantallaVotacion').style.display = 'flex';
-            document.getElementById('preguntaVotacion').textContent = votacionesData[votacionId].titulo;
+            document.getElementById('preguntaVotacion').textContent = titulo;
             
             if (yaVoto) {
                 document.getElementById('yaVotadoMensaje').style.display = 'block';
@@ -602,7 +598,6 @@
             }
         }
 
-        // Votar
         async function votar(tipo) {
             if (!votacionActual || !salaActual) return;
             
@@ -639,13 +634,14 @@
             }
         }
 
-        // Ir a resultados
         function irAResultados() {
             if (!votacionActual || !salaActual) return;
             
+            const titulo = votacionesConfig[votacionActual]?.titulo || `Votació ${votacionActual}`;
+            
             document.getElementById('pantallaVotacion').style.display = 'none';
             document.getElementById('pantallaResultados').style.display = 'flex';
-            document.getElementById('tituloResultado').textContent = votacionesData[votacionActual].titulo;
+            document.getElementById('tituloResultado').textContent = titulo;
             
             if (votacionRef) votacionRef.off();
             
@@ -656,44 +652,37 @@
             });
         }
 
-       // Actualizar gráfico - BARRAS PROPORCIONALES A VOTOS
-function actualizarGrafico(datos) {
-    const si = datos.si || 0;
-    const no = datos.no || 0;
-    const blanc = datos.blanc || 0;
-    const total = datos.totalVotantes || 0;
-    
-    document.getElementById('totalVotantes').textContent = total;
-    
-    document.getElementById('valorSi').textContent = si;
-    document.getElementById('valorNo').textContent = no;
-    document.getElementById('valorBlanc').textContent = blanc;
-    
-    const totalVotos = si + no + blanc;
-    
-    // Calcular porcentajes reales sobre el total de votos
-    const pctSi = totalVotos > 0 ? (si / totalVotos) * 100 : 0;
-    const pctNo = totalVotos > 0 ? (no / totalVotos) * 100 : 0;
-    const pctBlanc = totalVotos > 0 ? (blanc / totalVotos) * 100 : 0;
-    
-    // Aplicar altura proporcional al porcentaje (mínim 2% perquè es vegi)
-    const alturaSi = Math.max(2, pctSi);
-    const alturaNo = Math.max(2, pctNo);
-    const alturaBlanc = Math.max(2, pctBlanc);
-    
-    console.log('Percentages:', {si: pctSi, no: pctNo, blanc: pctBlanc}); // Per debug
-    
-    document.getElementById('barraSi').style.height = alturaSi + '%';
-    document.getElementById('barraNo').style.height = alturaNo + '%';
-    document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
-    
-    // Mostrar porcentajes debajo
-    document.getElementById('pctSi').textContent = pctSi.toFixed(1) + '%';
-    document.getElementById('pctNo').textContent = pctNo.toFixed(1) + '%';
-    document.getElementById('pctBlanc').textContent = pctBlanc.toFixed(1) + '%';
-}
+        function actualizarGrafico(datos) {
+            const si = datos.si || 0;
+            const no = datos.no || 0;
+            const blanc = datos.blanc || 0;
+            const total = datos.totalVotantes || 0;
+            
+            document.getElementById('totalVotantes').textContent = total;
+            
+            document.getElementById('valorSi').textContent = si;
+            document.getElementById('valorNo').textContent = no;
+            document.getElementById('valorBlanc').textContent = blanc;
+            
+            const totalVotos = si + no + blanc;
+            
+            const pctSi = totalVotos > 0 ? (si / totalVotos) * 100 : 0;
+            const pctNo = totalVotos > 0 ? (no / totalVotos) * 100 : 0;
+            const pctBlanc = totalVotos > 0 ? (blanc / totalVotos) * 100 : 0;
+            
+            const alturaSi = Math.max(2, pctSi);
+            const alturaNo = Math.max(2, pctNo);
+            const alturaBlanc = Math.max(2, pctBlanc);
+            
+            document.getElementById('barraSi').style.height = alturaSi + '%';
+            document.getElementById('barraNo').style.height = alturaNo + '%';
+            document.getElementById('barraBlanc').style.height = alturaBlanc + '%';
+            
+            document.getElementById('pctSi').textContent = pctSi.toFixed(1) + '%';
+            document.getElementById('pctNo').textContent = pctNo.toFixed(1) + '%';
+            document.getElementById('pctBlanc').textContent = pctBlanc.toFixed(1) + '%';
+        }
 
-        // Volver a inicio
         function volverAInicio() {
             if (votacionRef) votacionRef.off();
             votacionActual = null;
@@ -702,7 +691,6 @@ function actualizarGrafico(datos) {
             inicializarVotaciones();
         }
 
-        // Enter en input
         document.getElementById('inputSala')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') accederSala();
         });
