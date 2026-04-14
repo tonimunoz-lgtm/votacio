@@ -200,9 +200,7 @@
             align-items: center;
         }
         
-        .sala-item:hover {
-            background: #f5f5f5;
-        }
+        .sala-item:hover { background: #f5f5f5; }
         
         .sala-codigo {
             font-weight: bold;
@@ -211,10 +209,7 @@
             font-size: 1.1rem;
         }
         
-        .estado-votacion {
-            font-size: 0.9rem;
-            color: #666;
-        }
+        .estado-votacion { font-size: 0.9rem; color: #666; }
         
         .sin-sala {
             text-align: center;
@@ -223,13 +218,43 @@
         }
         
         .hidden { display: none; }
+        
+        .votacion-config-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .votacion-config-item input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .orden-num {
+            background: #2196F3;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚙️ Panell d'Administració</h1>
         
-        <!-- LOGIN -->
         <div id="loginPanel" class="login-panel">
             <div class="input-group">
                 <label>🔐 Contrasenya:</label>
@@ -238,10 +263,8 @@
             <button onclick="login()" class="btn-primary">Accedir</button>
         </div>
         
-        <!-- PANEL ADMIN -->
         <div id="adminPanel" class="admin-panel">
             
-            <!-- CREAR NUEVA SALA -->
             <div class="section">
                 <div class="section-title">➕ Crear Nova Sala de Votació</div>
                 <div class="crear-sala">
@@ -260,7 +283,6 @@
                 </div>
             </div>
             
-            <!-- LISTA DE SALAS -->
             <div class="section">
                 <div class="section-title">📋 Salas Actives</div>
                 <div id="listaSalas" class="lista-salas">
@@ -268,7 +290,6 @@
                 </div>
             </div>
             
-            <!-- SELECCIONAR SALA PARA GESTIONAR -->
             <div class="section">
                 <div class="section-title">🔍 Consultar/Gestionar Sala</div>
                 <div class="sala-selector">
@@ -283,85 +304,24 @@
                         <strong>Gestionant sala:</strong> <span id="salaActualCodigo" style="font-family: monospace; font-size: 1.2rem;"></span>
                     </div>
                     
-                    <!-- Votación 1 -->
-                    <div class="votacion-admin">
-                        <div class="votacion-titulo">📋 Votació 1: Pressupost anual</div>
-                        <div class="resultados-grid">
-                            <div class="resultado-box resultado-si">
-                                <div>SÍ</div>
-                                <div class="resultado-numero" id="v1-si">0</div>
-                            </div>
-                            <div class="resultado-box resultado-no">
-                                <div>NO</div>
-                                <div class="resultado-numero" id="v1-no">0</div>
-                            </div>
-                            <div class="resultado-box resultado-blanc">
-                                <div>BLANC</div>
-                                <div class="resultado-numero" id="v1-blanc">0</div>
-                            </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 2px solid #e9ecef;">
+                        <div style="font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">
+                            📝 Gestionar Preguntes de Votació
                         </div>
-                        <div style="color: #666; margin-bottom: 10px;">
-                            Total participants: <strong id="v1-total">0</strong>
+                        
+                        <div id="listaVotacionesConfig">
                         </div>
-                        <div class="acciones">
-                            <button onclick="resetearVotacion('votacion1')" class="btn-danger">🗑️ Resetear</button>
-                            <button onclick="verParticipantes('votacion1')" class="btn-warning">👥 Participants</button>
+                        
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <input type="text" id="nuevaVotacionTitulo" placeholder="Títol de la nova votació..." 
+                                   style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                            <button onclick="agregarVotacion()" class="btn-success" style="padding: 10px 20px;">➕ Afegir</button>
                         </div>
                     </div>
                     
-                    <!-- Votación 2 -->
-                    <div class="votacion-admin">
-                        <div class="votacion-titulo">📋 Votació 2: Calendari escolar</div>
-                        <div class="resultados-grid">
-                            <div class="resultado-box resultado-si">
-                                <div>SÍ</div>
-                                <div class="resultado-numero" id="v2-si">0</div>
-                            </div>
-                            <div class="resultado-box resultado-no">
-                                <div>NO</div>
-                                <div class="resultado-numero" id="v2-no">0</div>
-                            </div>
-                            <div class="resultado-box resultado-blanc">
-                                <div>BLANC</div>
-                                <div class="resultado-numero" id="v2-blanc">0</div>
-                            </div>
-                        </div>
-                        <div style="color: #666; margin-bottom: 10px;">
-                            Total participants: <strong id="v2-total">0</strong>
-                        </div>
-                        <div class="acciones">
-                            <button onclick="resetearVotacion('votacion2')" class="btn-danger">🗑️ Resetear</button>
-                            <button onclick="verParticipantes('votacion2')" class="btn-warning">👥 Participants</button>
-                        </div>
+                    <div id="votacionesContainer">
                     </div>
                     
-                    <!-- Votación 3 -->
-                    <div class="votacion-admin">
-                        <div class="votacion-titulo">📋 Votació 3: Normativa interna</div>
-                        <div class="resultados-grid">
-                            <div class="resultado-box resultado-si">
-                                <div>SÍ</div>
-                                <div class="resultado-numero" id="v3-si">0</div>
-                            </div>
-                            <div class="resultado-box resultado-no">
-                                <div>NO</div>
-                                <div class="resultado-numero" id="v3-no">0</div>
-                            </div>
-                            <div class="resultado-box resultado-blanc">
-                                <div>BLANC</div>
-                                <div class="resultado-numero" id="v3-blanc">0</div>
-                            </div>
-                        </div>
-                        <div style="color: #666; margin-bottom: 10px;">
-                            Total participants: <strong id="v3-total">0</strong>
-                        </div>
-                        <div class="acciones">
-                            <button onclick="resetearVotacion('votacion3')" class="btn-danger">🗑️ Resetear</button>
-                            <button onclick="verParticipantes('votacion3')" class="btn-warning">👥 Participants</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Acciones globales de sala -->
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 3px solid #f5f5f5;">
                         <button onclick="resetearSalaCompleta()" class="btn-danger">🗑️🗑️ RESET COMPLET DE LA SALA</button>
                         <button onclick="guardarResultadosSala()" class="btn-success">💾 Guardar Resultats</button>
@@ -371,14 +331,12 @@
                 </div>
             </div>
             
-            <!-- Panel de participantes -->
             <div id="participantesPanel" class="section hidden">
                 <div class="section-title">👥 Participants</div>
                 <div id="participantesData" class="export-data"></div>
                 <button onclick="cerrarParticipantes()" class="btn-secondary" style="margin-top: 10px;">Tancar</button>
             </div>
             
-            <!-- Exportación -->
             <div id="exportPanel" class="section hidden">
                 <div class="section-title">📋 Dades Exportades</div>
                 <div id="exportData" class="export-data"></div>
@@ -393,7 +351,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBF7P-Soao-ZSams3JceNVRYpr5tNs_RIs",
             authDomain: "campeonato-82be4.firebaseapp.com",
@@ -424,7 +381,6 @@
         }
 
         function logout() {
-            // Detener listeners
             listeners.forEach(l => l.off());
             listeners = [];
             
@@ -436,9 +392,8 @@
             document.getElementById('panelSala').classList.add('hidden');
         }
 
-        // Generar código aleatorio
         function generarCodigo() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sin I,O,0,1 para evitar confusiones
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let codigo = '';
             for (let i = 0; i < 4; i++) {
                 codigo += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -446,26 +401,27 @@
             return codigo;
         }
 
-        // Crear nueva sala
         async function crearSala() {
             let codigo = document.getElementById('inputCodigoSala').value.toUpperCase().trim();
             
-            // Si no hay código personalizado, generar aleatorio
             if (!codigo) {
                 codigo = generarCodigo();
             }
             
-            // Verificar si existe
             const snapshot = await database.ref('salas/' + codigo).once('value');
             if (snapshot.exists()) {
                 alert('⚠️ Aquest codi ja existeix! Tria un altre.');
                 return;
             }
             
-            // Crear estructura de la sala
             const salaData = {
                 creada: Date.now(),
                 activa: true,
+                configVotaciones: {
+                    'votacion1': { titulo: 'Pressupost anual', orden: 1 },
+                    'votacion2': { titulo: 'Calendari escolar', orden: 2 },
+                    'votacion3': { titulo: 'Normativa interna', orden: 3 }
+                },
                 votaciones: {
                     votacion1: { si: 0, no: 0, blanc: 0, totalVotantes: 0 },
                     votacion2: { si: 0, no: 0, blanc: 0, totalVotantes: 0 },
@@ -475,22 +431,18 @@
             
             await database.ref('salas/' + codigo).set(salaData);
             
-            // Mostrar código generado
             document.getElementById('codigoGenerado').textContent = codigo;
             document.getElementById('nuevaSalaInfo').classList.remove('hidden');
             
-            // Limpiar input y recargar lista
             document.getElementById('inputCodigoSala').value = '';
             cargarListaSalas();
             
-            // Seleccionar automáticamente en el dropdown
             setTimeout(() => {
                 document.getElementById('selectSala').value = codigo;
                 cargarSala();
             }, 500);
         }
 
-        // Cargar lista de salas
         async function cargarListaSalas() {
             const snapshot = await database.ref('salas').once('value');
             const salas = snapshot.val() || {};
@@ -498,7 +450,6 @@
             const listaDiv = document.getElementById('listaSalas');
             const select = document.getElementById('selectSala');
             
-            // Limpiar select
             select.innerHTML = '<option value="">-- Tria una sala --</option>';
             
             if (Object.keys(salas).length === 0) {
@@ -509,9 +460,11 @@
             let html = '';
             Object.keys(salas).sort().forEach(codigo => {
                 const sala = salas[codigo];
-                const totalVotos = (sala.votaciones?.votacion1?.totalVotantes || 0) + 
-                                  (sala.votaciones?.votacion2?.totalVotantes || 0) + 
-                                  (sala.votaciones?.votacion3?.totalVotantes || 0);
+                const votaciones = sala.votaciones || {};
+                let totalVotos = 0;
+                Object.values(votaciones).forEach(v => {
+                    totalVotos += (v.totalVotantes || 0);
+                });
                 
                 html += `
                     <div class="sala-item">
@@ -523,7 +476,6 @@
                     </div>
                 `;
                 
-                // Añadir al select
                 const option = document.createElement('option');
                 option.value = codigo;
                 option.textContent = `${codigo} (${totalVotos} vots)`;
@@ -538,8 +490,7 @@
             cargarSala();
         }
 
-        // Cargar sala seleccionada
-        function cargarSala() {
+        async function cargarSala() {
             const codigo = document.getElementById('selectSala').value;
             if (!codigo) {
                 document.getElementById('panelSala').classList.add('hidden');
@@ -552,26 +503,138 @@
             document.getElementById('participantesPanel').classList.add('hidden');
             document.getElementById('exportPanel').classList.add('hidden');
             
-            // Detener listeners anteriores
             listeners.forEach(l => l.off());
             listeners = [];
             
-            // Escuchar cambios en tiempo real
-            ['votacion1', 'votacion2', 'votacion3'].forEach((vot, idx) => {
-                const listener = database.ref(`salas/${codigo}/votaciones/${vot}`);
-                listener.on('value', snapshot => {
-                    const datos = snapshot.val() || { si: 0, no: 0, blanc: 0, totalVotantes: 0 };
-                    actualizarUI(vot, datos, idx + 1);
-                });
-                listeners.push(listener);
+            await cargarConfigVotaciones();
+        }
+
+        async function cargarConfigVotaciones() {
+            const snapshot = await database.ref(`salas/${salaSeleccionada}/configVotaciones`).once('value');
+            const config = snapshot.val() || {};
+            
+            renderizarConfigVotaciones(config);
+            renderizarVotacionesAdmin(config);
+        }
+
+        function renderizarConfigVotaciones(config) {
+            const container = document.getElementById('listaVotacionesConfig');
+            container.innerHTML = '';
+            
+            Object.entries(config).sort((a, b) => a[1].orden - b[1].orden).forEach(([key, data], index) => {
+                const div = document.createElement('div');
+                div.className = 'votacion-config-item';
+                div.innerHTML = `
+                    <div class="orden-num">${index + 1}</div>
+                    <input type="text" value="${data.titulo}" 
+                           onchange="actualizarTitulo('${key}', this.value)"
+                           style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button onclick="eliminarVotacion('${key}')" 
+                            class="btn-danger" style="padding: 8px 15px; font-size: 0.9rem;">🗑️</button>
+                `;
+                container.appendChild(div);
             });
         }
 
-        function actualizarUI(votacion, datos, num) {
-            document.getElementById(`v${num}-si`).textContent = datos.si || 0;
-            document.getElementById(`v${num}-no`).textContent = datos.no || 0;
-            document.getElementById(`v${num}-blanc`).textContent = datos.blanc || 0;
-            document.getElementById(`v${num}-total`).textContent = datos.totalVotantes || 0;
+        async function actualizarTitulo(key, nuevoTitulo) {
+            if (!salaSeleccionada) return;
+            await database.ref(`salas/${salaSeleccionada}/configVotaciones/${key}/titulo`).set(nuevoTitulo);
+        }
+
+        async function eliminarVotacion(key) {
+            if (!salaSeleccionada) return;
+            
+            const snap = await database.ref(`salas/${salaSeleccionada}/configVotaciones`).once('value');
+            const config = snap.val() || {};
+            
+            if (Object.keys(config).length <= 1) {
+                alert('⚠️ Ha de quedar almenys una votació!');
+                return;
+            }
+            
+            if (!confirm(`Segur que vols eliminar "${config[key]?.titulo}"?`)) return;
+            
+            await database.ref(`salas/${salaSeleccionada}/configVotaciones/${key}`).remove();
+            await database.ref(`salas/${salaSeleccionada}/votaciones/${key}`).remove();
+            
+            await cargarConfigVotaciones();
+        }
+
+        async function agregarVotacion() {
+            const titulo = document.getElementById('nuevaVotacionTitulo').value.trim();
+            if (!titulo) return;
+            if (!salaSeleccionada) return;
+            
+            const snap = await database.ref(`salas/${salaSeleccionada}/configVotaciones`).once('value');
+            const config = snap.val() || {};
+            
+            const ids = Object.keys(config).map(k => parseInt(k.replace('votacion', '')) || 0);
+            const maxId = Math.max(...ids, 0);
+            const nuevoId = 'votacion' + (maxId + 1);
+            const orden = Object.keys(config).length + 1;
+            
+            await database.ref(`salas/${salaSeleccionada}/configVotaciones/${nuevoId}`).set({
+                titulo: titulo,
+                orden: orden
+            });
+            
+            await database.ref(`salas/${salaSeleccionada}/votaciones/${nuevoId}`).set({
+                si: 0, no: 0, blanc: 0, totalVotantes: 0
+            });
+            
+            document.getElementById('nuevaVotacionTitulo').value = '';
+            await cargarConfigVotaciones();
+        }
+
+        function renderizarVotacionesAdmin(config) {
+            const container = document.getElementById('votacionesContainer');
+            container.innerHTML = '';
+            
+            listeners.forEach(l => l.off());
+            listeners = [];
+            
+            Object.entries(config).sort((a, b) => a[1].orden - b[1].orden).forEach(([key, data]) => {
+                const div = document.createElement('div');
+                div.className = 'votacion-admin';
+                div.innerHTML = `
+                    <div class="votacion-titulo">📋 ${data.titulo} <span style="color: #999; font-size: 0.8rem;">(${key})</span></div>
+                    <div class="resultados-grid">
+                        <div class="resultado-box resultado-si">
+                            <div>SÍ</div>
+                            <div class="resultado-numero" id="${key}-si">0</div>
+                        </div>
+                        <div class="resultado-box resultado-no">
+                            <div>NO</div>
+                            <div class="resultado-numero" id="${key}-no">0</div>
+                        </div>
+                        <div class="resultado-box resultado-blanc">
+                            <div>BLANC</div>
+                            <div class="resultado-numero" id="${key}-blanc">0</div>
+                        </div>
+                    </div>
+                    <div style="color: #666; margin-bottom: 10px;">
+                        Total: <strong id="${key}-total">0</strong> participants
+                    </div>
+                    <div class="acciones">
+                        <button onclick="resetearVotacion('${key}')" class="btn-danger">🗑️ Resetear</button>
+                        <button onclick="verParticipantes('${key}')" class="btn-warning">👥 Participants</button>
+                    </div>
+                `;
+                container.appendChild(div);
+                
+                const listener = database.ref(`salas/${salaSeleccionada}/votaciones/${key}`);
+                listener.on('value', snapshot => {
+                    const datos = snapshot.val() || { si: 0, no: 0, blanc: 0, totalVotantes: 0 };
+                    const elSi = document.getElementById(`${key}-si`);
+                    if (elSi) {
+                        elSi.textContent = datos.si || 0;
+                        document.getElementById(`${key}-no`).textContent = datos.no || 0;
+                        document.getElementById(`${key}-blanc`).textContent = datos.blanc || 0;
+                        document.getElementById(`${key}-total`).textContent = datos.totalVotantes || 0;
+                    }
+                });
+                listeners.push(listener);
+            });
         }
 
         async function resetearVotacion(votacion) {
@@ -588,9 +651,12 @@
 
         async function resetearSalaCompleta() {
             if (!salaSeleccionada) return;
-            if (!confirm('⚠️⚠️⚠️ RESET COMPLET? Això borrarà TOTS els vots de les 3 votacions!')) return;
+            if (!confirm('⚠️⚠️⚠️ RESET COMPLET? Això borrarà TOTS els vots!')) return;
             
-            for (let vot of ['votacion1', 'votacion2', 'votacion3']) {
+            const snap = await database.ref(`salas/${salaSeleccionada}/configVotaciones`).once('value');
+            const config = snap.val() || {};
+            
+            for (let vot of Object.keys(config)) {
                 await database.ref(`salas/${salaSeleccionada}/votaciones/${vot}`).set({
                     si: 0, no: 0, blanc: 0, totalVotantes: 0,
                     reseteadoEn: Date.now()
@@ -660,7 +726,7 @@
 
         async function eliminarSala() {
             if (!salaSeleccionada) return;
-            if (!confirm(`⚠️ Segur que vols ELIMINAR la sala ${salaSeleccionada}? Això no es pot desfer!`)) return;
+            if (!confirm(`⚠️ Segur que vols ELIMINAR la sala ${salaSeleccionada}?`)) return;
             
             await database.ref(`salas/${salaSeleccionada}`).remove();
             
@@ -671,7 +737,6 @@
             cargarListaSalas();
         }
 
-        // Login con Enter
         document.getElementById('adminPassword')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
